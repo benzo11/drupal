@@ -1,0 +1,3 @@
+services:
+ event_timer.get_date:
+   class: Drupal\event_timer\EventTimerService
