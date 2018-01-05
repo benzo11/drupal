@@ -14,22 +14,41 @@ use Drupal\Core\Block\BlockBase;
  */
 class EventTimer extends BlockBase
 {
+    private $service;
+
+    public function __construct(array $configuration, $plugin_id, $plugin_definition)
+    {
+        $this->service = \Drupal::service('event_timer.get_date');
+        parent::__construct($configuration, $plugin_id, $plugin_definition);
+    }
+
     /**
      * {@inheritdoc}
      */
     public function build()
     {
-        $config = $this->getConfiguration();
-        print_r($config);
+        $node = \Drupal::routeMatch()->getParameter('node');
+        $eventStatus = $this->service->getDate($node->field_event_date->value);
 
-        $service = \Drupal::service('event_timer.get_date');
+        if ($eventStatus['result'] === 1) {
+            $eventString = "The event is in progress.";
+        }
+        if ($eventStatus['result'] === 2) {
+            $eventString = "The event has ended.";
+        }
+        if ($eventStatus['result'] === 3) {
+            $eventString = "Days left to event start: " . $eventStatus['interval'];
+        }
+
         return array(
-            '#markup' => $this->t('Days @name!', array(
-                '@name' => $service->getDate(1),
+            '#markup' => $this->t('<h1>@string</h1>', array(
+                '@string' => $eventString,
             )),
-            '#title'  => $this->t('Time left')
+            '#title'  => $this->t("Event status"),
+            '#cache'  => [
+                'max-age' => 0,
+            ],
         );
-
     }
 
 }
