@@ -30,14 +30,14 @@ class EventTimer extends BlockBase
         $node = \Drupal::routeMatch()->getParameter('node');
         $eventStatus = $this->service->getDate($node->field_event_date->value);
 
-        if ($eventStatus['result'] === 1) {
+        if ($eventStatus['result'] == 1) {
             $eventString = "The event is in progress.";
         }
-        if ($eventStatus['result'] === 2) {
+        if ($eventStatus['result'] == 2) {
             $eventString = "The event has ended.";
         }
-        if ($eventStatus['result'] === 3) {
-            $eventString = "Days left to event start: " . $eventStatus['interval'];
+        if ($eventStatus['result'] == 3) {
+            $eventString = "Days left to event start: " . $eventStatus['diffDays'];
         }
 
         return array(

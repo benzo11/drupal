@@ -19,23 +19,29 @@ class EventTimerService
      * @param DateTime|null $eventDate
      * @return array
      */
-    public function getDate($eventDate = null)
+    public function getDate($eventDate)
     {
-        $currentDate = new DateTime('NOW');
-        $eventDate = new DateTime($eventDate);
+        $currentDate = new DateTime('Today');
+        $currentDate->setTime(0, 0, 0);
 
-        $interval = date_diff($currentDate, $eventDate)->format("%a");
+        $eDate = new DateTime($eventDate);
+        $eDate->setTime(0, 0, 0);
 
-        if ($eventDate->format("Y-m-d") <= $currentDate->format("Y-m-d")) {
-            if ($interval == 0) {
-                $result = 1;
-            } else {
-                $result = 2;
-            }
-        } else {
+        $diff = $currentDate->diff($eDate);
+        $diffDays = (integer)$diff->format("%R%a");
+
+        if ($diffDays == 0) {
+            $result = 1;
+        }
+
+        if ($diffDays < 0) {
+            $result = 2;
+        }
+
+        if ($diffDays > 0) {
             $result = 3;
         }
 
-        return compact('result', 'interval');
+        return compact('result', 'diffDays');
     }
 }
